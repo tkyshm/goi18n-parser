@@ -11,28 +11,23 @@ import (
 
 // Const values
 const (
-	DefaultAnalyzerFuncName = "T"
-	MaxDepth                = 5
+	AnalyzerFuncName = "T"
+	MaxDepth         = 5
 )
 
-// Analyzer interface
-type Analyzer interface {
-	Name() string
-}
-
-// DefaultAnalyzer struct
-type DefaultAnalyzer struct {
+// Analyzer struct
+type Analyzer struct {
 	FuncName string // Function name
 	Debug    bool
 	Records  []I18NRecord
 }
 
 // Name returns the function name that is used to analyze go source code
-func (da DefaultAnalyzer) Name() string {
+func (da Analyzer) Name() string {
 	if da.FuncName != "" {
 		return da.FuncName
 	}
-	return DefaultAnalyzerFuncName
+	return AnalyzerFuncName
 }
 
 // I18NRecord has `id` and `translation` field
@@ -42,7 +37,7 @@ type I18NRecord struct {
 }
 
 // AnalyzeFromFile analyzes a go file
-func (da *DefaultAnalyzer) AnalyzeFromFile(filename string) []I18NRecord {
+func (da *Analyzer) AnalyzeFromFile(filename string) []I18NRecord {
 	fset := token.NewFileSet()
 	f, err := parser.ParseFile(fset, filename, nil, 0)
 	if err != nil {
@@ -93,7 +88,7 @@ func traversalToIdent(n interface{}, depth int) *ast.Ident {
 }
 
 // AnalyzeFromFiles analyzes multiple go source files
-func (da *DefaultAnalyzer) AnalyzeFromFiles(files []string) []I18NRecord {
+func (da *Analyzer) AnalyzeFromFiles(files []string) []I18NRecord {
 	for _, filename := range files {
 		da.AnalyzeFromFile(filename)
 	}
@@ -101,7 +96,7 @@ func (da *DefaultAnalyzer) AnalyzeFromFiles(files []string) []I18NRecord {
 }
 
 // SaveJSON saves JSON based on go-i18np format
-func (da DefaultAnalyzer) SaveJSON(path string) error {
+func (da Analyzer) SaveJSON(path string) error {
 	out, err := json.Marshal(da.Records)
 	if err != nil {
 		return err

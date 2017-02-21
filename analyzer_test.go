@@ -8,7 +8,7 @@ import (
 	"testing"
 )
 
-func TestDefaultAnalyzerAnalyzeFromFile(t *testing.T) {
+func TestAnalyzerAnalyzeFromFile(t *testing.T) {
 	expected := []string{
 		"sample_uniq_key",
 		"sample_uniq_key_2",
@@ -17,7 +17,7 @@ func TestDefaultAnalyzerAnalyzeFromFile(t *testing.T) {
 		"sample_uniq_key_5",
 	}
 
-	a := DefaultAnalyzer{}
+	a := Analyzer{}
 	rs := a.AnalyzeFromFile("test/sample_file.go")
 
 	if rs[0].ID != expected[0] {
@@ -41,10 +41,10 @@ func TestDefaultAnalyzerAnalyzeFromFile(t *testing.T) {
 	}
 }
 
-func TestDefaultAnalyzerAnalyzeFromFiles(t *testing.T) {
+func TestAnalyzerAnalyzeFromFiles(t *testing.T) {
 	files := []string{"test/sample_file.go", "test/sample_file.go"}
 
-	a := DefaultAnalyzer{}
+	a := Analyzer{}
 	rs := a.AnalyzeFromFiles(files)
 
 	if len(rs) != 5 {
@@ -60,7 +60,7 @@ func TestSaveJSON(t *testing.T) {
 	tmp.Close()
 	defer os.Remove(tmp.Name())
 
-	a := DefaultAnalyzer{}
+	a := Analyzer{}
 	rs := a.AnalyzeFromFile("test/sample_file.go")
 
 	a.SaveJSON(tmp.Name())
