@@ -1,29 +1,33 @@
 package goi18np
 
 import (
+	"encoding/json"
 	"go/ast"
 	"go/parser"
 	"go/token"
+	"io/ioutil"
 	"strings"
 )
 
+// Const values
 const (
 	DefaultAnalyzerFuncName = "T"
-	MaxDepth                = 3
+	MaxDepth                = 5
 )
 
-type ExecMode int
-
+// Analyzer interface
 type Analyzer interface {
 	Name() string
 }
 
+// DefaultAnalyzer struct
 type DefaultAnalyzer struct {
 	FuncName string // Function name
 	Debug    bool
 	Records  []I18NRecord
 }
 
+// Name returns the function name that is used to analyze go source code
 func (da DefaultAnalyzer) Name() string {
 	if da.FuncName != "" {
 		return da.FuncName
@@ -31,11 +35,13 @@ func (da DefaultAnalyzer) Name() string {
 	return DefaultAnalyzerFuncName
 }
 
+// I18NRecord has `id` and `translation` field
 type I18NRecord struct {
 	ID          string `json:"id"`
 	Translation string `json:"translation"`
 }
 
+// AnalyzeFromFile analyzes a go file
 func (da *DefaultAnalyzer) AnalyzeFromFile(filename string) []I18NRecord {
 	fset := token.NewFileSet()
 	f, err := parser.ParseFile(fset, filename, nil, 0)
@@ -86,11 +92,32 @@ func traversalToIdent(n interface{}, depth int) *ast.Ident {
 	return nil
 }
 
+// AnalyzeFromFiles analyzes multiple go source files
 func (da *DefaultAnalyzer) AnalyzeFromFiles(files []string) []I18NRecord {
 	for _, filename := range files {
 		da.AnalyzeFromFile(filename)
 	}
 	return da.Records
+}
+
+// DumpJSON returns []byte and error marshaled data analyzed from source
+func (da DefaultAnalyzer) DumpJSON() ([]byte, error) {
+	return json.Marshal(da.Records)
+}
+
+// SaveJSON saves JSON based on go-i18np format
+func (da DefaultAnalyzer) SaveJSON(path string) error {
+	out, err := da.DumpJSON()
+	if err != nil {
+		return err
+	}
+
+	err = ioutil.WriteFile(path, out, 0644)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func containsID(id string, rs []I18NRecord) bool {
