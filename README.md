@@ -1,8 +1,6 @@
 [![Build Status](https://travis-ci.org/tkyshm/goi18n-parser.svg?branch=master)](https://travis-ci.org/tkyshm/goi18n-parser)
 
 # goi18n-parser
-This package is to create go-i18n JSON.
-
 ## Usage
 
 very simple!
