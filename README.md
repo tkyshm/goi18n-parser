@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/tkyshm/goi18n-parser.svg?branch=master)](https://travis-ci.org/tkyshm/goi18n-parser)
+
 # goi18n-parser
 This package is to create go-i18n JSON.
 
@@ -14,8 +16,11 @@ import (
 )
 
 func main() {
-    a := goi18np.Analyzer{}
-    result := AnalyzeFromFile
+    a := goi18np.DefaultAnalyzer{
+        Debug: true,
+    }
+    result := a.AnalyzeFromFile("path/to/code.go")
+
     out, err := json.Marshal(result)
     if err != nil {
         panic(err)
