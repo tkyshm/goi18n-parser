@@ -19,14 +19,14 @@ type Analyzer interface {
 }
 
 type DefaultAnalyzer struct {
-	Fname   string // Function name
-	Debug   bool
-	Records []I18NRecord
+	FuncName string // Function name
+	Debug    bool
+	Records  []I18NRecord
 }
 
 func (da DefaultAnalyzer) Name() string {
-	if da.Fname != "" {
-		return da.Fname
+	if da.FuncName != "" {
+		return da.FuncName
 	}
 	return DefaultAnalyzerFuncName
 }
