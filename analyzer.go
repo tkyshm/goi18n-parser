@@ -9,6 +9,7 @@ import (
 
 const (
 	DefaultAnalyzerFuncName = "T"
+	MaxDepth                = 3
 )
 
 type ExecMode int
@@ -49,17 +50,19 @@ func (da *DefaultAnalyzer) AnalyzeFromFile(filename string) []I18NRecord {
 	ast.Inspect(f, func(n ast.Node) bool {
 		switch x := n.(type) {
 		case *ast.CallExpr:
-			switch y := x.Fun.(type) {
-			case *ast.Ident:
-				fn := y.Name
-				if fn == "T" {
-					key := strings.Trim(x.Args[0].(*ast.BasicLit).Value, "\"")
-					r := I18NRecord{
-						ID: key,
-					}
-					if !containsID(key, da.Records) {
-						da.Records = append(da.Records, r)
-					}
+			ident := traversalToIdent(x.Fun, 0)
+			if ident == nil {
+				return true
+			}
+
+			fn := ident.Name
+			if fn == "T" {
+				key := strings.Trim(x.Args[0].(*ast.BasicLit).Value, "\"")
+				r := I18NRecord{
+					ID: key,
+				}
+				if !containsID(key, da.Records) {
+					da.Records = append(da.Records, r)
 				}
 			}
 		}
@@ -67,6 +70,20 @@ func (da *DefaultAnalyzer) AnalyzeFromFile(filename string) []I18NRecord {
 	})
 
 	return da.Records
+}
+
+func traversalToIdent(n interface{}, depth int) *ast.Ident {
+	switch x := n.(type) {
+	case *ast.Ident:
+		return x
+	case *ast.SelectorExpr:
+		if depth < MaxDepth {
+			return traversalToIdent(x.Sel, depth+1)
+		}
+	default:
+		return nil
+	}
+	return nil
 }
 
 func (da *DefaultAnalyzer) AnalyzeFromFiles(files []string) []I18NRecord {
