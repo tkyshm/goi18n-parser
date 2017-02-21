@@ -28,6 +28,8 @@ func main() {
     }
 
     fmt.Println(string(out))
+
+    a.SaveJSON("path/to/translate.json")
 }
 
 ```
