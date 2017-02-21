@@ -36,7 +36,7 @@ func main() {
 
 Analyzer has fields:
 
-name     | type            |
+name     | type            | description
 -------- | --------------- | ----------------------------------------------
 FuncName | string          | Analyze target function name
 Debug    | bool            | If true, exec `ast.Print` for go source codes
