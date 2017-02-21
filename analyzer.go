@@ -100,14 +100,9 @@ func (da *DefaultAnalyzer) AnalyzeFromFiles(files []string) []I18NRecord {
 	return da.Records
 }
 
-// DumpJSON returns []byte and error marshaled data analyzed from source
-func (da DefaultAnalyzer) DumpJSON() ([]byte, error) {
-	return json.Marshal(da.Records)
-}
-
 // SaveJSON saves JSON based on go-i18np format
 func (da DefaultAnalyzer) SaveJSON(path string) error {
-	out, err := da.DumpJSON()
+	out, err := json.Marshal(da.Records)
 	if err != nil {
 		return err
 	}
