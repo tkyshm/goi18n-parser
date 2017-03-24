@@ -110,6 +110,21 @@ func (da Analyzer) SaveJSON(path string) error {
 	return nil
 }
 
+// SaveJSONIndent saves JSON based on go-i18np format
+func (da Analyzer) SaveJSONIndent(path, prefix, indent string) error {
+	out, err := json.MarshalIndent(da.Records, prefix, indent)
+	if err != nil {
+		return err
+	}
+
+	err = ioutil.WriteFile(path, out, 0644)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func containsID(id string, rs []I18NRecord) bool {
 	for _, r := range rs {
 		if r.ID == id {
