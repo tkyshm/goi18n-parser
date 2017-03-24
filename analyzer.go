@@ -6,6 +6,7 @@ import (
 	"go/parser"
 	"go/token"
 	"io/ioutil"
+	"sort"
 	"strings"
 )
 
@@ -34,6 +35,19 @@ func (da Analyzer) Name() string {
 type I18NRecord struct {
 	ID          string `json:"id"`
 	Translation string `json:"translation"`
+}
+
+// I18NRecords is slice of I18NRecord
+type I18NRecords []I18NRecord
+
+// SortByID sorts I18NRecords by ID
+func (rs I18NRecords) SortByID() {
+	sort.Slice(rs, func(i, j int) bool {
+		if strings.Compare(rs[i].ID, rs[j].ID) == -1 {
+			return true
+		}
+		return false
+	})
 }
 
 // AnalyzeFromFile analyzes a go file
