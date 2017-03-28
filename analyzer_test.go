@@ -63,7 +63,10 @@ func TestSaveJSON(t *testing.T) {
 	a := Analyzer{}
 	rs := a.AnalyzeFromFile("test/sample_file.go")
 
-	a.SaveJSON(tmp.Name())
+	file, _ := os.Create(tmp.Name())
+	if err := a.SaveJSON(file); err != nil {
+		t.Error(err)
+	}
 
 	data, err := ioutil.ReadFile(tmp.Name())
 	if err != nil {

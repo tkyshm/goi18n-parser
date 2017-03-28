@@ -5,7 +5,7 @@ import (
 	"go/ast"
 	"go/parser"
 	"go/token"
-	"os"
+	"io"
 	"sort"
 	"strings"
 )
@@ -110,16 +110,16 @@ func (da *Analyzer) AnalyzeFromFiles(files []string) []I18NRecord {
 }
 
 // SaveJSON saves JSON based on go-i18np format
-func (da Analyzer) SaveJSON(path string) error {
-	if err := SaveJSON(path, da.Records); err != nil {
+func (da Analyzer) SaveJSON(w io.Writer) error {
+	if err := SaveJSON(w, da.Records); err != nil {
 		return err
 	}
 	return nil
 }
 
 // SaveJSONIndent saves JSON based on go-i18np format
-func (da Analyzer) SaveJSONIndent(path, prefix, indent string) error {
-	if err := SaveJSONIndent(path, da.Records, prefix, indent); err != nil {
+func (da Analyzer) SaveJSONIndent(w io.Writer, prefix, indent string) error {
+	if err := SaveJSONIndent(w, da.Records, prefix, indent); err != nil {
 		return err
 	}
 	return nil
@@ -135,15 +135,9 @@ func containsID(id string, rs []I18NRecord) bool {
 }
 
 // SaveJSON save I18NRecords as json without indent
-func SaveJSON(path string, i18nrs I18NRecords) error {
-	file, err := os.Create(path)
-	if err != nil {
-		return err
-	}
-	defer file.Close()
-
-	enc := json.NewEncoder(file)
-	if err = enc.Encode(i18nrs); err != nil {
+func SaveJSON(w io.Writer, i18nrs I18NRecords) error {
+	enc := json.NewEncoder(w)
+	if err := enc.Encode(i18nrs); err != nil {
 		return err
 	}
 
@@ -151,16 +145,10 @@ func SaveJSON(path string, i18nrs I18NRecords) error {
 }
 
 // SaveJSONIndent save I18NRecords as json with indent
-func SaveJSONIndent(path string, i18nrs I18NRecords, prefix, indent string) error {
-	file, err := os.Create(path)
-	if err != nil {
-		return err
-	}
-	defer file.Close()
-
-	enc := json.NewEncoder(file)
+func SaveJSONIndent(w io.Writer, i18nrs I18NRecords, prefix, indent string) error {
+	enc := json.NewEncoder(w)
 	enc.SetIndent(prefix, indent)
-	if err = enc.Encode(i18nrs); err != nil {
+	if err := enc.Encode(i18nrs); err != nil {
 		return err
 	}
 
